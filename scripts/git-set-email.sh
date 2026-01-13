@@ -132,7 +132,8 @@ while IFS= read -r -d '' gitmodules_file; do
                         gitdir_line=$(grep "^gitdir:" "$full_submodule_path/.git" 2>/dev/null || true)
                         if [ -n "$gitdir_line" ]; then
                             relative_gitdir=$(echo "$gitdir_line" | sed 's/^gitdir: *//')
-                            absolute_gitdir="$parent_repo/.git/$relative_gitdir"
+                            # Resolve o caminho relativo a partir do diretório do submódulo
+                            absolute_gitdir=$(cd "$full_submodule_path" && realpath -m "$relative_gitdir" 2>/dev/null || echo "$full_submodule_path/$relative_gitdir")
                             
                             # Normaliza o caminho
                             if [ -d "$absolute_gitdir" ]; then
